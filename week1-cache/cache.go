@@ -1,11 +1,14 @@
 package cache
 
+import "time"
+
 // represents a single item in the cache
 type Node struct {
-	key   string
-	value interface{} // or string, or any type you choose
-	prev  *Node
-	next  *Node
+	key       string
+	value     interface{} // or string, or any type you choose
+	prev      *Node
+	next      *Node
+	expiresAt time.Time // Zero value = no expiration
 }
 
 // represents manager; it holds the two DS (map and list) and cache's settings
@@ -33,35 +36,51 @@ func NewLRUCache(capacity int) *LRUCache {
 }
 
 func (c *LRUCache) Get(key string) (interface{}, bool) {
-	if node, ok := c.cache[key]; ok {
-		c.moveToTail(node) // Mark as recently used
-		return node.value, true
+	node, ok := c.cache[key]
+
+	// if key doesn't exists
+	if !ok {
+		return nil, false
 	}
-	return nil, false
+
+	// if key does exists but expired -> delete node in ll + delete from map
+	if node.isExpired() {
+		c.removeNode(node)
+		delete(c.cache, node.key) // not need to save key, we have ptr to node in this method
+		return nil, false
+	}
+
+	c.moveToTail(node) // Mark as recently used
+	return node.value, true
 }
 
-func (c *LRUCache) Set(key string, value interface{}) {
+func (c *LRUCache) Set(key string, value interface{}, ttl time.Duration) {
 	// check if node exists
 	node, ok := c.cache[key]
 
-	// if exists -> update and move to tail
+	// if exists (expired or not) -> update value and TTL and move to tail
 	if ok {
 		node.value = value
+		if ttl > 0 {
+			node.expiresAt = time.Now().Add(ttl)
+		}
 		c.moveToTail(node)
 		return
 	}
 
 	// if doesn't exist -> create and insert new node
-
 	// create new node
 	node = &Node{key: key, value: value}
+	if ttl > 0 {
+		node.expiresAt = time.Now().Add(ttl)
+	}
 
 	// insert new node
 
-	// if capacity has reached -> evict c.head.next {remove from ll and cache}
+	// if capacity has reached -> evict c.head.next {remove from ll and cache} doesnt matter expired or not
 	if len(c.cache) == c.capacity {
-		lru := c.head.next        // Capture reference BEFORE mutation
-		c.removeNode(c.head.next) // Mutates c.head.next
+		lru := c.head.next        // Capture reference to lru node BEFORE mutation
+		c.removeNode(c.head.next) // Mutates c.head.next (if not lru, we would have lost access to lru node (and key!))
 		delete(c.cache, lru.key)
 	}
 
@@ -96,4 +115,11 @@ func (c *LRUCache) addToTail(node *Node) {
 func (c *LRUCache) moveToTail(node *Node) {
 	c.removeNode(node)
 	c.addToTail(node)
+}
+
+func (n *Node) isExpired() bool {
+	if n.expiresAt.IsZero() {
+		return false // No TTL Set
+	}
+	return time.Now().After(n.expiresAt)
 }
