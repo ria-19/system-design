@@ -1,0 +1,66 @@
+File: cache.test
+Type: cpu
+Time: 2025-11-15 21:38:42 IST
+Duration: 2.11s, Total samples = 6.23s (295.79%)
+Showing nodes accounting for 5.86s, 94.06% of 6.23s total
+Dropped 64 nodes (cum <= 0.03s)
+      flat  flat%   sum%        cum   cum%
+     2.87s 46.07% 46.07%      2.87s 46.07%  runtime.usleep
+     1.83s 29.37% 75.44%      1.83s 29.37%  runtime.pthread_cond_wait
+     0.71s 11.40% 86.84%      0.71s 11.40%  runtime.pthread_cond_signal
+     0.09s  1.44% 88.28%      1.04s 16.69%  internal/sync.(*Mutex).lockSlow
+     0.05s   0.8% 89.09%      2.50s 40.13%  internal/sync.(*Mutex).Unlock (inline)
+     0.05s   0.8% 89.89%      0.05s   0.8%  runtime.cansemacquire (inline)
+     0.05s   0.8% 90.69%      0.05s   0.8%  runtime.madvise
+     0.04s  0.64% 91.33%      2.64s 42.38%  runtime.lock2
+     0.04s  0.64% 91.97%      0.04s  0.64%  runtime.procyield
+     0.04s  0.64% 92.62%      0.04s  0.64%  runtime.pthread_mutex_unlock
+     0.02s  0.32% 92.94%      0.04s  0.64%  runtime.mapaccess2_faststr
+     0.02s  0.32% 93.26%      1.81s 29.05%  runtime.stealWork
+     0.01s  0.16% 93.42%      3.55s 56.98%  cache.BenchmarkConcurrentGet.func1
+     0.01s  0.16% 93.58%      2.45s 39.33%  internal/sync.(*Mutex).unlockSlow
+     0.01s  0.16% 93.74%      0.33s  5.30%  runtime.notesleep
+     0.01s  0.16% 93.90%      0.88s 14.13%  runtime.semacquire1
+     0.01s  0.16% 94.06%      0.16s  2.57%  runtime.wakep
+         0     0% 94.06%      3.53s 56.66%  cache.(*LRUCache).Get
+         0     0% 94.06%      0.09s  1.44%  cache.(*LRUCache).Set
+         0     0% 94.06%      0.22s  3.53%  cache.TestHighContention.func1
+         0     0% 94.06%      0.04s  0.64%  fmt.(*pp).doPrintf
+         0     0% 94.06%      0.11s  1.77%  fmt.Sprintf
+         0     0% 94.06%      0.04s  0.64%  fmt.newPrinter
+         0     0% 94.06%      1.04s 16.69%  internal/sync.(*Mutex).Lock (inline)
+         0     0% 94.06%      0.88s 14.13%  internal/sync.runtime_SemacquireMutex
+         0     0% 94.06%      2.44s 39.17%  internal/sync.runtime_Semrelease
+         0     0% 94.06%      0.04s  0.64%  internal/sync.runtime_doSpin
+         0     0% 94.06%      0.05s   0.8%  runtime.(*mheap).alloc.func1
+         0     0% 94.06%      0.05s   0.8%  runtime.(*mheap).allocSpan
+         0     0% 94.06%      2.19s 35.15%  runtime.findRunnable
+         0     0% 94.06%      0.04s  0.64%  runtime.lock (inline)
+         0     0% 94.06%      2.64s 42.38%  runtime.lockWithRank (inline)
+         0     0% 94.06%      0.33s  5.30%  runtime.mPark (inline)
+         0     0% 94.06%      2.34s 37.56%  runtime.mcall
+         0     0% 94.06%      0.14s  2.25%  runtime.notewakeup
+         0     0% 94.06%      1.09s 17.50%  runtime.osyield (inline)
+         0     0% 94.06%      2.34s 37.56%  runtime.park_m
+         0     0% 94.06%      0.04s  0.64%  runtime.parkunlock_c
+         0     0% 94.06%      0.06s  0.96%  runtime.ready
+         0     0% 94.06%      0.06s  0.96%  runtime.readyWithTime.goready.func1
+         0     0% 94.06%      0.11s  1.77%  runtime.resetspinning
+         0     0% 94.06%      1.78s 28.57%  runtime.runqgrab
+         0     0% 94.06%      1.78s 28.57%  runtime.runqsteal
+         0     0% 94.06%      2.30s 36.92%  runtime.schedule
+         0     0% 94.06%      1.83s 29.37%  runtime.semasleep
+         0     0% 94.06%      0.75s 12.04%  runtime.semawakeup
+         0     0% 94.06%      2.44s 39.17%  runtime.semrelease1
+         0     0% 94.06%      0.14s  2.25%  runtime.startm
+         0     0% 94.06%      0.34s  5.46%  runtime.stopm
+         0     0% 94.06%      0.05s   0.8%  runtime.sysUsed (inline)
+         0     0% 94.06%      0.05s   0.8%  runtime.sysUsedOS (inline)
+         0     0% 94.06%      0.14s  2.25%  runtime.systemstack
+         0     0% 94.06%      0.61s  9.79%  runtime.unlock (inline)
+         0     0% 94.06%      0.61s  9.79%  runtime.unlock2
+         0     0% 94.06%      0.61s  9.79%  runtime.unlock2Wake
+         0     0% 94.06%      0.61s  9.79%  runtime.unlockWithRank (inline)
+         0     0% 94.06%      1.04s 16.69%  sync.(*Mutex).Lock (inline)
+         0     0% 94.06%      2.50s 40.13%  sync.(*Mutex).Unlock
+         0     0% 94.06%      3.55s 56.98%  testing.(*B).RunParallel.func1

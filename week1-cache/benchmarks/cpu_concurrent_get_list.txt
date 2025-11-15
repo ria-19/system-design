@@ -1,0 +1,72 @@
+Total: 6.23s
+ROUTINE ======================== cache.(*LRUCache).Get in /Users/riya/Desktop/dev/System-Design/week1-cache/cache.go
+         0      3.53s (flat, cum) 56.66% of Total
+         .          .     42:func (c *LRUCache) Get(key string) (interface{}, bool) {
+         .      1.01s     43:	c.mu.Lock()
+         .          .     44:	defer c.mu.Unlock()
+         .          .     45:
+         .       40ms     46:	node, ok := c.cache[key]
+         .          .     47:
+         .          .     48:	// if key doesn't exists
+         .          .     49:	if !ok {
+         .          .     50:		return nil, false
+         .          .     51:	}
+         .          .     52:
+         .          .     53:	// if key does exists but expired -> delete node in ll + delete from map
+         .       30ms     54:	if node.isExpired() {
+         .          .     55:		c.removeNode(node)
+         .          .     56:		delete(c.cache, node.key) // not need to save key, we have ptr to node in this method
+         .          .     57:		return nil, false
+         .          .     58:	}
+         .          .     59:
+         .       10ms     60:	c.moveToTail(node) // Mark as recently used
+         .      2.44s     61:	return node.value, true
+         .          .     62:}
+         .          .     63:
+         .          .     64:func (c *LRUCache) Set(key string, value interface{}, ttl time.Duration) {
+         .          .     65:	c.mu.Lock()
+         .          .     66:	defer c.mu.Unlock()
+ROUTINE ======================== cache.BenchmarkConcurrentGet.func1 in /Users/riya/Desktop/dev/System-Design/week1-cache/benchmark_test.go
+      10ms      3.55s (flat, cum) 56.98% of Total
+         .          .     90:	b.RunParallel(func(pb *testing.PB) {
+         .          .     91:		i := 0
+         .          .     92:		for pb.Next() {
+         .      140ms     93:			key := fmt.Sprintf("key%d", i%1000)
+         .      3.40s     94:			cache.Get(key)
+      10ms       10ms     95:			i++
+         .          .     96:		}
+         .          .     97:	})
+         .          .     98:}
+         .          .     99:
+         .          .    100:// Measures throughput of the cache under high contention
+ROUTINE ======================== sync.(*Pool).Get in /opt/homebrew/Cellar/go/1.25.3/libexec/src/sync/pool.go
+      10ms       30ms (flat, cum)  0.48% of Total
+         .          .    131:func (p *Pool) Get() any {
+         .          .    132:	if race.Enabled {
+         .          .    133:		race.Disable()
+         .          .    134:	}
+         .       20ms    135:	l, pid := p.pin()
+         .          .    136:	x := l.private
+         .          .    137:	l.private = nil
+         .          .    138:	if x == nil {
+         .          .    139:		// Try to pop the head of the local shard. We prefer
+         .          .    140:		// the head over the tail for temporal locality of
+         .          .    141:		// reuse.
+         .          .    142:		x, _ = l.shared.popHead()
+         .          .    143:		if x == nil {
+         .          .    144:			x = p.getSlow(pid)
+         .          .    145:		}
+         .          .    146:	}
+         .          .    147:	runtime_procUnpin()
+         .          .    148:	if race.Enabled {
+         .          .    149:		race.Enable()
+         .          .    150:		if x != nil {
+         .          .    151:			race.Acquire(poolRaceAddr(x))
+         .          .    152:		}
+         .          .    153:	}
+      10ms       10ms    154:	if x == nil && p.New != nil {
+         .          .    155:		x = p.New()
+         .          .    156:	}
+         .          .    157:	return x
+         .          .    158:}
+         .          .    159:

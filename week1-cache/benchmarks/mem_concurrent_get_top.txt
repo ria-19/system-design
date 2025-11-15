@@ -1,0 +1,32 @@
+File: cache.test
+Type: alloc_space
+Time: 2025-11-15 21:38:46 IST
+Showing nodes accounting for 78MB, 100% of 78MB total
+      flat  flat%   sum%        cum   cum%
+   36.50MB 46.79% 46.79%       72MB 92.30%  cache.BenchmarkConcurrentGet.func1
+      36MB 46.15% 92.95%    38.50MB 49.36%  fmt.Sprintf
+    2.50MB  3.21% 96.15%     2.50MB  3.21%  fmt.init.func1
+       1MB  1.28% 97.44%        1MB  1.28%  runtime.allocm
+       1MB  1.28% 98.72%        1MB  1.28%  runtime.malg
+    0.50MB  0.64% 99.36%     0.50MB  0.64%  cache.(*LRUCache).Set
+    0.50MB  0.64%   100%        1MB  1.28%  cache.TestHighContention.func1
+         0     0%   100%     0.50MB  0.64%  cache.BenchmarkConcurrentGet
+         0     0%   100%     2.50MB  3.21%  cache.TestConcurrentAccess.func1
+         0     0%   100%     2.50MB  3.21%  fmt.newPrinter
+         0     0%   100%     0.50MB  0.64%  runtime.mcall
+         0     0%   100%     0.50MB  0.64%  runtime.mstart
+         0     0%   100%     0.50MB  0.64%  runtime.mstart0
+         0     0%   100%     0.50MB  0.64%  runtime.mstart1
+         0     0%   100%        1MB  1.28%  runtime.newm
+         0     0%   100%        1MB  1.28%  runtime.newproc.func1
+         0     0%   100%        1MB  1.28%  runtime.newproc1
+         0     0%   100%     0.50MB  0.64%  runtime.park_m
+         0     0%   100%        1MB  1.28%  runtime.resetspinning
+         0     0%   100%        1MB  1.28%  runtime.schedule
+         0     0%   100%        1MB  1.28%  runtime.startm
+         0     0%   100%        1MB  1.28%  runtime.systemstack
+         0     0%   100%        1MB  1.28%  runtime.wakep
+         0     0%   100%     2.50MB  3.21%  sync.(*Pool).Get
+         0     0%   100%       72MB 92.30%  testing.(*B).RunParallel.func1
+         0     0%   100%     0.50MB  0.64%  testing.(*B).launch
+         0     0%   100%     0.50MB  0.64%  testing.(*B).runN
