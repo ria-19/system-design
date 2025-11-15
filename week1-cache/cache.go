@@ -1,6 +1,9 @@
 package cache
 
-import "time"
+import (
+	"sync"
+	"time"
+)
 
 // represents a single item in the cache
 type Node struct {
@@ -17,6 +20,7 @@ type LRUCache struct {
 	cache    map[string]*Node // HashMap: key -> pointer to Node; Important!!
 	head     *Node            // Dummy head (LRU side)
 	tail     *Node            // Dummy tail (MRU side)
+	mu       sync.Mutex
 }
 
 func NewLRUCache(capacity int) *LRUCache {
@@ -36,6 +40,9 @@ func NewLRUCache(capacity int) *LRUCache {
 }
 
 func (c *LRUCache) Get(key string) (interface{}, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	node, ok := c.cache[key]
 
 	// if key doesn't exists
@@ -55,6 +62,9 @@ func (c *LRUCache) Get(key string) (interface{}, bool) {
 }
 
 func (c *LRUCache) Set(key string, value interface{}, ttl time.Duration) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	// check if node exists
 	node, ok := c.cache[key]
 
@@ -81,7 +91,7 @@ func (c *LRUCache) Set(key string, value interface{}, ttl time.Duration) {
 	if len(c.cache) == c.capacity {
 		lru := c.head.next        // Capture reference to lru node BEFORE mutation
 		c.removeNode(c.head.next) // Mutates c.head.next (if not lru, we would have lost access to lru node (and key!))
-		delete(c.cache, lru.key)
+		delete(c.cache, lru.key)  //  this is key of lru node, not new node key
 	}
 
 	// add new node at tail and in cache for tracking

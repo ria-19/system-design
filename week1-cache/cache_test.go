@@ -1,6 +1,8 @@
 package cache
 
 import (
+	"fmt"
+	"sync"
 	"testing"
 	"time"
 )
@@ -120,3 +122,70 @@ func TestExpiredNodesCountTowardCapacity(t *testing.T) {
 		t.Error("d should exist")
 	}
 }
+
+// Simulates a busy web server where multiple requests (goroutines) are trying to read and write
+// to the same shared cache at the exact same time.
+func TestConcurrentAccess(t *testing.T) {
+	cache := NewLRUCache(100)
+
+	// Launch 10 goroutines
+	var wg sync.WaitGroup
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+
+			for j := 0; j < 100; j++ {
+				key := fmt.Sprintf("key-%d-%d", id, j)
+				cache.Set(key, j, 0)
+				cache.Get(key)
+			}
+		}(i)
+	}
+
+	wg.Wait()
+}
+
+// Concurrency stress test
+func TestHighContention(t *testing.T) {
+	cache := NewLRUCache(100)
+
+	// 100 goroutines hammering the SAME keys
+	var wg sync.WaitGroup
+	for i := 0; i < 100; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 1000; j++ {
+				// Everyone fights over keys 0-9
+				key := fmt.Sprintf("key%d", j%10)
+				cache.Set(key, j, 0)
+				cache.Get(key)
+			}
+		}()
+	}
+	wg.Wait()
+}
+
+/* Before Thread Safety
+ ==================
+ WARNING: DATA RACE
+Write at 0x00c00040c028 by goroutine 17:
+  cache.(*LRUCache).addToTail()
+      /Users/riya/Desktop/dev/System-Design/week1-cache/cache.go:110
+  cache.(*LRUCache).Set()
+      /Users/riya/Desktop/dev/System-Design/week1-cache/cache.go:88
+  cache.TestConcurrentAccess.func1()
+      /Users/riya/Desktop/dev/System-Design/week1-cache/cache_test.go:138
+
+Previous read at 0x00c00040c028 by goroutine 9:
+  cache.(*LRUCache).removeNode()
+      /Users/riya/Desktop/dev/System-Design/week1-cache/cache.go:98
+  cache.(*LRUCache).moveToTail()
+      /Users/riya/Desktop/dev/System-Design/week1-cache/cache.go:116
+  cache.(*LRUCache).Get()
+      /Users/riya/Desktop/dev/System-Design/week1-cache/cache.go:53
+  cache.TestConcurrentAccess.func1()
+      /Users/riya/Desktop/dev/System-Design/week1-cache/cache_test.go:139
+ ==================
+*/
